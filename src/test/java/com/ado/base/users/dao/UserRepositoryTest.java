@@ -1,23 +1,18 @@
 package com.ado.base.users.dao;
 
-import com.ado.base.users.UsersApplication;
 import com.ado.base.users.model.User;
-import org.assertj.core.internal.bytebuddy.matcher.CollectionSizeMatcher;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
-
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,12 +55,6 @@ public class UserRepositoryTest {
         assertThat(userRepository.findAll().size(), is(2));
     }
 
-    private User getUser() {
-        return User.builder()
-                .email("e@mail.com")
-                .build();
-    }
-
     @Test
     public void testSaveUser_EmptyMail_ThrowsException() {
         expectedException.expect(ConstraintViolationException.class);
@@ -86,7 +75,36 @@ public class UserRepositoryTest {
     public void testFindById() {
         User user = userRepository.save(getUser());
         Optional<User> retreivedUser = userRepository.findById(user.getId());
+        assertThat(retreivedUser.isPresent(), is(Boolean.TRUE));
         assertThat(retreivedUser.get().getEmail(), is("e@mail.com"));
+    }
+
+    @Test
+    public void testSaveUser_DuplicatedEmail_ThrowsException() {
+        expectedException.expect(DataIntegrityViolationException.class);
+        expectedException.expectMessage(
+                allOf(containsString("could not execute statement"),
+                containsString("constraint")));
+        userRepository.save(getUser());
+        userRepository.save(getUser());
+    }
+
+    @Test
+    public void testDateOfBith_Future() {
+        User user = getUser();
+        user.setDateOfBirth(LocalDate.now().plusYears(300));
+        expectedException.expect(ConstraintViolationException.class);
+        expectedException.expectMessage(allOf(
+                containsString("must be a date in the past or in the present"),
+                containsString("dateOfBirth")));
+        userRepository.save(user);
+    }
+
+    private User getUser() {
+        return User.builder()
+                .email("e@mail.com")
+                .dateOfBirth(LocalDate.now())
+                .build();
     }
 
 }

@@ -1,11 +1,12 @@
 package com.ado.base.users.api.request;
 
-import lombok.*;
+
+import lombok.Builder;
+import lombok.Getter;
 
 @Builder
 @Getter
-@ToString
-public class CreateUserRequest {
+public class UpdateUserDTO {
 
     private String name;
     private String email;
