@@ -1,18 +1,18 @@
 package com.ado.base.users.service;
 
 import com.ado.base.users.api.request.UpsertUserDTO;
-import com.ado.base.users.model.User;
+import com.ado.base.users.api.response.UserDetailsDTO;
 
 import java.util.List;
 
 public interface UserSvc {
 
-    List<User> listUsers();
+    List<UserDetailsDTO> listUsers();
 
-    User createUser(UpsertUserDTO user);
+    UserDetailsDTO createUser(UpsertUserDTO user);
 
     void deleteUser(String id);
 
-    User updateUser(String id, UpsertUserDTO user);
+    UserDetailsDTO updateUser(String id, UpsertUserDTO user);
 
 }

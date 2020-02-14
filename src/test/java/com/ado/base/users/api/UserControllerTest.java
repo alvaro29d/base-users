@@ -1,5 +1,6 @@
 package com.ado.base.users.api;
 
+import com.ado.base.users.api.response.UserDetailsDTO;
 import com.ado.base.users.model.User;
 import com.ado.base.users.service.UserSvc;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -45,14 +46,14 @@ public class UserControllerTest {
     @Test
     @SneakyThrows
     public void testListUsers() {
-        User user = User.builder().name("fullName").email("email").id("id").build();
+        UserDetailsDTO user = UserDetailsDTO.builder().name("fullName").email("email").id("id").build();
         when(userSvc.listUsers()).thenReturn(Collections.singletonList(user));
         String usersResponse = mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn().getResponse().getContentAsString();
-        List<User> list = new ObjectMapper().readValue(usersResponse, new TypeReference<List<User>>() {});
-        assertThat(list.get(0),is(user));
+        List<UserDetailsDTO> list = new ObjectMapper().readValue(usersResponse, new TypeReference<List<UserDetailsDTO>>() {});
+        assertThat(list.get(0).getId(),is(user.getId()));
 
     }
 

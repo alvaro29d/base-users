@@ -1,7 +1,9 @@
 package com.ado.base.users.service.impl;
 
 import com.ado.base.users.api.request.UpsertUserDTO;
+import com.ado.base.users.api.response.UserDetailsDTO;
 import com.ado.base.users.dao.UserRepository;
+import com.ado.base.users.mapper.UserDetailsMapper;
 import com.ado.base.users.model.User;
 import com.ado.base.users.service.UserSvc;
 import org.springframework.stereotype.Service;
@@ -19,18 +21,18 @@ public class UserSvcImpl implements UserSvc {
     }
 
     @Override
-    public List<User> listUsers() {
-        return userRepository.findAll();
+    public List<UserDetailsDTO> listUsers() {
+        return UserDetailsMapper.getUsersDetails(userRepository.findAll());
     }
 
     @Override
-    public User createUser(UpsertUserDTO userRequest) {
+    public UserDetailsDTO createUser(UpsertUserDTO userRequest) {
         User user = User.builder()
                 .id(UUID.randomUUID().toString())
                 .email(userRequest.getEmail())
                 .name(userRequest.getName())
                 .build();
-        return userRepository.save(user);
+        return UserDetailsMapper.getUserDetails(userRepository.save(user));
     }
 
     @Override
@@ -39,11 +41,11 @@ public class UserSvcImpl implements UserSvc {
     }
 
     @Override
-    public User updateUser(String id, UpsertUserDTO user) {
+    public UserDetailsDTO updateUser(String id, UpsertUserDTO user) {
         User userFromRepo = userRepository.getOne(id);
         userFromRepo.setEmail(user.getEmail());
         userFromRepo.setName(user.getName());
-        return userRepository.save(userFromRepo);
+        return UserDetailsMapper.getUserDetails(userRepository.save(userFromRepo));
     }
 
 }

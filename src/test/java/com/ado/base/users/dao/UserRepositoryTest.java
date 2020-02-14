@@ -53,10 +53,17 @@ public class UserRepositoryTest {
     }
 
     @Test
-    public void testSaveUser_EmptyMail_ThrowsException() {
+    public void testSaveUser_NullMail_ThrowsException() {
         expectedException.expect(ConstraintViolationException.class);
         expectedException.expectMessage("invalid.user.email.notEmpty");
         userRepository.save(User.builder().build());
+    }
+
+    @Test
+    public void testSaveUser_EmptyMail_ThrowsException() {
+        expectedException.expect(ConstraintViolationException.class);
+        expectedException.expectMessage("invalid.user.email.notEmpty");
+        userRepository.save(User.builder().email("").build());
     }
 
     @Test

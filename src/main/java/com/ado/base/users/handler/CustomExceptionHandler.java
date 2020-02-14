@@ -18,6 +18,9 @@ import java.util.List;
 
 @ControllerAdvice
 @Slf4j
+/**
+ * https://www.toptal.com/java/spring-boot-rest-api-error-handling
+ */
 public class CustomExceptionHandler {
 
     @ExceptionHandler({ ConstraintViolationException.class })

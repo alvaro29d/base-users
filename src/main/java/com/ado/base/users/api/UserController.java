@@ -1,7 +1,7 @@
 package com.ado.base.users.api;
 
 import com.ado.base.users.api.request.UpsertUserDTO;
-import com.ado.base.users.model.User;
+import com.ado.base.users.api.response.UserDetailsDTO;
 import com.ado.base.users.service.UserSvc;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +21,13 @@ public class UserController {
 
     @ResponseBody
     @GetMapping
-    public List<User> getUsers() {
+    public List<UserDetailsDTO> getUsers() {
         return userSvc.listUsers();
     }
 
     @PostMapping
     @ResponseBody
-    public User addUser(@RequestBody UpsertUserDTO user) {
+    public UserDetailsDTO addUser(@RequestBody UpsertUserDTO user) {
         log.info("addUser, user={}", user);
         return userSvc.createUser(user);
     }
@@ -39,7 +39,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ResponseBody
-    public User updateUser(@PathVariable String id, @RequestBody UpsertUserDTO user) {
+    public UserDetailsDTO updateUser(@PathVariable String id, @RequestBody UpsertUserDTO user) {
         return userSvc.updateUser(id, user);
     }
 }
