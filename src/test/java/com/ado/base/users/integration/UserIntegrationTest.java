@@ -7,7 +7,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -17,6 +19,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -34,6 +37,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Slf4j
 public class UserIntegrationTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     public static final String EMAIL_1 = "valid@email.com";
     public static final String EMAIL_2 = "valid2@email.com";
@@ -78,6 +84,16 @@ public class UserIntegrationTest {
         assertThat(getUsers().size(), is(1));
         deleteUser(id);
         assertThat(getUsers().size(),is(0));
+    }
+
+
+    @Test
+    public void testSaveInvalidUser() {
+        try {
+            saveUser(buildUser(""));
+        } catch (Exception ex) {
+            ex.toString();
+        }
     }
 
     private User buildUser(String email) {

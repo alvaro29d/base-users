@@ -2,6 +2,7 @@ package com.ado.base.users.api;
 
 import com.ado.base.users.api.request.CreateUserDTO;
 import com.ado.base.users.api.request.UpdateUserDTO;
+import com.ado.base.users.api.response.UserDetailsDTO;
 import com.ado.base.users.model.User;
 import com.ado.base.users.service.UserSvc;
 import lombok.extern.slf4j.Slf4j;
@@ -22,13 +23,13 @@ public class UserController {
 
     @ResponseBody
     @GetMapping
-    public List<User> getUsers() {
+    public List<UserDetailsDTO> getUsers() {
         return userSvc.listUsers();
     }
 
     @PostMapping
     @ResponseBody
-    public User addUser(@RequestBody CreateUserDTO user) {
+    public UserDetailsDTO addUser(@RequestBody CreateUserDTO user) {
         log.info("addUser, user={}", user);
         return userSvc.createUser(user);
     }
@@ -40,7 +41,7 @@ public class UserController {
 
     @PutMapping("/{id}")
     @ResponseBody
-    public User updateUser(@PathVariable String id, @RequestBody UpdateUserDTO user) {
+    public UserDetailsDTO updateUser(@PathVariable String id, @RequestBody UpdateUserDTO user) {
         return userSvc.updateUser(id, user);
     }
 }
