@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityManager;
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,9 +29,6 @@ public class UserRepositoryTest {
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @Test
     public void testFindByName_NotFound() {
@@ -58,9 +54,7 @@ public class UserRepositoryTest {
     @Test
     public void testSaveUser_EmptyMail_ThrowsException() {
         expectedException.expect(ConstraintViolationException.class);
-        expectedException.expectMessage(
-                allOf(containsString("must not be null"),
-                        containsString("email")));
+        expectedException.expectMessage("invalid.user.email.notEmpty");
         userRepository.save(User.builder().build());
     }
 

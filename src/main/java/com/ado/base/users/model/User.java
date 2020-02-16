@@ -6,10 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.PastOrPresent;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
@@ -23,10 +20,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
-    @NotNull
+
+    @NotEmpty(message = "invalid.user.email.notEmpty")
     @Email
     @Column(unique = true)
     private String email;
+
 //    @NotNull(message = "invalid.user.fullName")
     private String fullName;
     @PastOrPresent
