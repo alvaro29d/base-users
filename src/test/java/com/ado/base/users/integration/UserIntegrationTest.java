@@ -2,16 +2,21 @@ package com.ado.base.users.integration;
 
 
 import com.ado.base.users.UsersApplication;
+import com.ado.base.users.api.request.UpsertUserDTO;
+import com.ado.base.users.api.response.ErrorMessageDTO;
 import com.ado.base.users.model.User;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -19,8 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -37,7 +41,11 @@ public class UserIntegrationTest {
 
     public static final String EMAIL_1 = "valid@email.com";
     public static final String EMAIL_2 = "valid2@email.com";
-    public static final String NAME = "validName";
+    public static final String NAME_1 = "validName";
+    public static final String NAME_2 = "validName2";
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,8 +60,11 @@ public class UserIntegrationTest {
 
     @Test
     public void testFindAll_WithUsers() {
-        String id1 = saveUser(buildUser(EMAIL_1)).getId();
-        String id2 = saveUser(buildUser(EMAIL_2)).getId();
+        String id1 = saveUserSuccessfully(buildUser()).getId();
+        String id2 = saveUserSuccessfully(UpsertUserDTO.builder()
+                .email(EMAIL_2)
+                .name(NAME_2)
+                .build()).getId();
 
         assertThat(getUsers().size(), is(2));
 
@@ -63,7 +74,7 @@ public class UserIntegrationTest {
 
     @Test
     public void testSaveAndGetUser() {
-        User user = saveUser(buildUser(EMAIL_1));
+        User user = saveUserSuccessfully(buildUser());
 
         assertThat(user, is(notNullValue()));
         assertThat(user.getEmail(), is(EMAIL_1));
@@ -74,16 +85,31 @@ public class UserIntegrationTest {
 
     @Test
     public void testDeleteUser() {
-        String id = saveUser(buildUser(EMAIL_1)).getId();
+        String id = saveUserSuccessfully(buildUser()).getId();
         assertThat(getUsers().size(), is(1));
         deleteUser(id);
         assertThat(getUsers().size(),is(0));
     }
 
-    private User buildUser(String email) {
-        return User.builder()
-                .fullName(NAME)
-                .email(email)
+    @Test
+    @SneakyThrows
+    public void testUserDuplicateEmail_RespondBadRequest (){
+        User user = saveUserSuccessfully(buildUser());
+
+        MvcResult mvcResult = saveUser(buildUser());
+
+        assertThat(mvcResult.getResponse().getStatus(), is(HttpStatus.BAD_REQUEST.value()));
+        ErrorMessageDTO errorMessageDTO = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorMessageDTO.class);
+        assertThat(errorMessageDTO.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
+        assertThat(errorMessageDTO.getStatusDescription(), is(HttpStatus.BAD_REQUEST.getReasonPhrase()));
+        assertThat(errorMessageDTO.getMessages().get(0), is("UNIQUE_USER_EMAIL"));
+        deleteUser(user.getId());
+    }
+
+    private UpsertUserDTO buildUser() {
+        return UpsertUserDTO.builder()
+                .name(NAME_1)
+                .email(EMAIL_1)
                 .build();
     }
 
@@ -102,13 +128,18 @@ public class UserIntegrationTest {
     }
 
     @SneakyThrows
-    private User saveUser(User user) {
-        MvcResult mvcResult = mockMvc.perform(post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(user)))
-                .andExpect(status().isOk())
-                .andReturn();
+    private User saveUserSuccessfully(UpsertUserDTO user) {
+        MvcResult mvcResult = saveUser(user);
+        assertThat(mvcResult.getResponse().getStatus(), is(HttpStatus.OK.value()));
         return objectMapper.readValue(mvcResult.getResponse().getContentAsString(), User.class);
+    }
+
+    @SneakyThrows
+    private MvcResult saveUser(UpsertUserDTO user) {
+        return  mockMvc.perform(post("/users")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(objectMapper.writeValueAsString(user)))
+            .andReturn();
     }
 
 

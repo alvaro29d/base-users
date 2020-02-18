@@ -15,6 +15,10 @@ import java.time.ZonedDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(uniqueConstraints = {
+        @UniqueConstraint(name = "unique_user_email", columnNames = {"email"}),
+        @UniqueConstraint(name = "unique_user_name", columnNames = {"name"})
+})
 public class User {
 
     @Id
@@ -23,13 +27,14 @@ public class User {
 
     @NotEmpty(message = "invalid.user.email.notEmpty")
     @Email
-    @Column(unique = true)
     private String email;
 
-//    @NotNull(message = "invalid.user.fullName")
-    private String fullName;
+    @NotEmpty(message = "invalid.user.name.notEmpty")
+    private String name;
+
     @PastOrPresent
     private LocalDate dateOfBirth;
+
 
     private String password;
 

@@ -47,6 +47,7 @@ public class UserRepositoryTest {
         userRepository.save(getUser());
         User user = getUser();
         user.setEmail("another@mail.com");
+        user.setName("anotherName");
         userRepository.save(user);
         assertThat(userRepository.findAll().size(), is(2));
     }
@@ -96,6 +97,7 @@ public class UserRepositoryTest {
 
     private User getUser() {
         return User.builder()
+                .name("userName")
                 .email("e@mail.com")
                 .dateOfBirth(LocalDate.now())
                 .build();

@@ -1,9 +1,7 @@
 package com.ado.base.users.api.response;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -11,17 +9,8 @@ import java.util.List;
 @Getter
 public class ErrorMessageDTO {
 
-    @JsonIgnore
-    private final HttpStatus status;
-
+    private int statusCode;
+    private String statusDescription;
     private List<String> messages;
-
-    public int getStatusCode() {
-        return status.value();
-    }
-
-    public String getStatusDescription() {
-        return status.getReasonPhrase();
-    }
 
 }

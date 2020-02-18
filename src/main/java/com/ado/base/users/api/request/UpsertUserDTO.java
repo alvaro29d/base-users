@@ -4,8 +4,9 @@ import lombok.*;
 
 @Builder
 @Getter
+@Setter
 @ToString
-public class CreateUserDTO {
+public class UpsertUserDTO {
 
     private String name;
     private String email;

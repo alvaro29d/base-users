@@ -1,7 +1,6 @@
 package com.ado.base.users.service.impl;
 
-import com.ado.base.users.api.request.CreateUserDTO;
-import com.ado.base.users.api.request.UpdateUserDTO;
+import com.ado.base.users.api.request.UpsertUserDTO;
 import com.ado.base.users.dao.UserRepository;
 import com.ado.base.users.model.User;
 import com.ado.base.users.service.UserSvc;
@@ -25,11 +24,11 @@ public class UserSvcImpl implements UserSvc {
     }
 
     @Override
-    public User createUser(CreateUserDTO userRequest) {
+    public User createUser(UpsertUserDTO userRequest) {
         User user = User.builder()
                 .id(UUID.randomUUID().toString())
                 .email(userRequest.getEmail())
-                .fullName(userRequest.getName())
+                .name(userRequest.getName())
                 .build();
         return userRepository.save(user);
     }
@@ -40,10 +39,10 @@ public class UserSvcImpl implements UserSvc {
     }
 
     @Override
-    public User updateUser(String id, UpdateUserDTO user) {
+    public User updateUser(String id, UpsertUserDTO user) {
         User userFromRepo = userRepository.getOne(id);
         userFromRepo.setEmail(user.getEmail());
-        userFromRepo.setFullName(user.getName());
+        userFromRepo.setName(user.getName());
         return userRepository.save(userFromRepo);
     }
 
