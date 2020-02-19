@@ -9,7 +9,6 @@ import com.ado.base.users.service.UserSvc;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserSvcImpl implements UserSvc {
@@ -28,7 +27,6 @@ public class UserSvcImpl implements UserSvc {
     @Override
     public UserDetailsDTO createUser(UpsertUserDTO userRequest) {
         User user = User.builder()
-                .id(UUID.randomUUID().toString())
                 .email(userRequest.getEmail())
                 .name(userRequest.getName())
                 .build();
@@ -36,12 +34,12 @@ public class UserSvcImpl implements UserSvc {
     }
 
     @Override
-    public void deleteUser(String id) {
+    public void deleteUser(Integer id) {
         userRepository.deleteById(id);
     }
 
     @Override
-    public UserDetailsDTO updateUser(String id, UpsertUserDTO user) {
+    public UserDetailsDTO updateUser(Integer id, UpsertUserDTO user) {
         User userFromRepo = userRepository.getOne(id);
         userFromRepo.setEmail(user.getEmail());
         userFromRepo.setName(user.getName());

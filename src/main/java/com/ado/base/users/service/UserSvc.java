@@ -11,8 +11,8 @@ public interface UserSvc {
 
     UserDetailsDTO createUser(UpsertUserDTO user);
 
-    void deleteUser(String id);
+    void deleteUser(Integer id);
 
-    UserDetailsDTO updateUser(String id, UpsertUserDTO user);
+    UserDetailsDTO updateUser(Integer id, UpsertUserDTO user);
 
 }

@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.ado.base.users.model.User.UNIQUE_USER_EMAIL;
+import static com.ado.base.users.model.User.UNIQUE_USER_NAME;
+
 @ControllerAdvice
 @Slf4j
 /**
@@ -46,20 +49,21 @@ public class CustomExceptionHandler {
         ErrorMessageDTO errorMessageDTO = ErrorMessageDTO.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .statusDescription(HttpStatus.BAD_REQUEST.getReasonPhrase())
-                .messages(Collections.singletonList(getMessage(ex.getMessage())))
+                .messages(Collections.singletonList(getMessage(ex.getMessage().toLowerCase())))
                 .build();
         return new ResponseEntity<>(
             errorMessageDTO, new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     private String getMessage(String exceptionMessage) {
-        log.info("exceptionMessage={}",exceptionMessage);
-        String message = "dafault exception message";
-        if(exceptionMessage.contains("PUBLIC.") && exceptionMessage.contains("_INDEX_2")) {
-            int beginIndex = exceptionMessage.indexOf("PUBLIC.") +  "PUBLIC.".length();
-            int finalIndex = exceptionMessage.indexOf("_INDEX_2");
-            log.info("beginIndex={}, finalIndex={}",beginIndex, finalIndex);
-            return exceptionMessage.subSequence(beginIndex , finalIndex).toString();
+        log.debug("exceptionMessage={}",exceptionMessage);
+        String message = "default exception message";
+        if(exceptionMessage.contains(UNIQUE_USER_EMAIL)) {
+            message = UNIQUE_USER_EMAIL;
+        }else if(exceptionMessage.contains(UNIQUE_USER_NAME)) {
+            message = UNIQUE_USER_NAME;
+        } else {
+            log.error("Error Message not handled, exceptionMessage=\"{}\"", exceptionMessage);
         }
         return message;
     }
