@@ -33,13 +33,13 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    public void removeUser(@PathVariable String id) {
+    public void removeUser(@PathVariable Integer id) {
         userSvc.deleteUser(id);
     }
 
     @PutMapping("/{id}")
     @ResponseBody
-    public UserDetailsDTO updateUser(@PathVariable String id, @RequestBody UpsertUserDTO user) {
+    public UserDetailsDTO updateUser(@PathVariable Integer id, @RequestBody UpsertUserDTO user) {
         return userSvc.updateUser(id, user);
     }
 }

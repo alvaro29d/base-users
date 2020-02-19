@@ -46,7 +46,7 @@ public class UserControllerTest {
     @Test
     @SneakyThrows
     public void testListUsers() {
-        UserDetailsDTO user = UserDetailsDTO.builder().name("fullName").email("email").id("id").build();
+        UserDetailsDTO user = UserDetailsDTO.builder().name("fullName").email("email").id(1).build();
         when(userSvc.listUsers()).thenReturn(Collections.singletonList(user));
         String usersResponse = mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())

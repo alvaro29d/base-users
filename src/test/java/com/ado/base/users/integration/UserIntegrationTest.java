@@ -23,8 +23,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import javax.validation.ConstraintViolationException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import static com.ado.base.users.model.User.UNIQUE_USER_EMAIL;
+import static com.ado.base.users.model.User.UNIQUE_USER_NAME;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -61,8 +64,8 @@ public class UserIntegrationTest {
 
     @Test
     public void testFindAll_WithUsers() {
-        String id1 = saveUserSuccessfully(buildUser()).getId();
-        String id2 = saveUserSuccessfully(UpsertUserDTO.builder()
+        int id1 = saveUserSuccessfully(buildUser()).getId();
+        int id2 = saveUserSuccessfully(UpsertUserDTO.builder()
                 .email(EMAIL_2)
                 .name(NAME_2)
                 .build()).getId();
@@ -79,14 +82,14 @@ public class UserIntegrationTest {
 
         assertThat(user, is(notNullValue()));
         assertThat(user.getEmail(), is(EMAIL_1));
-//        assertThat(user.getFullName(), is(NAME));
+        assertThat(user.getName(), is(NAME_1));
 
         deleteUser(user.getId());
     }
 
     @Test
     public void testDeleteUser() {
-        String id = saveUserSuccessfully(buildUser()).getId();
+        int id = saveUserSuccessfully(buildUser()).getId();
         assertThat(getUsers().size(), is(1));
         deleteUser(id);
         assertThat(getUsers().size(),is(0));
@@ -94,17 +97,35 @@ public class UserIntegrationTest {
 
     @Test
     @SneakyThrows
-    public void testUserDuplicateEmail_RespondBadRequest (){
+    public void testUserDuplicateEmail_RespondsBadRequest (){
         User user = saveUserSuccessfully(buildUser());
 
         MvcResult mvcResult = saveUser(buildUser());
 
+        verifyBadRequest(mvcResult, UNIQUE_USER_EMAIL);
+        deleteUser(user.getId());
+    }
+
+    @Test
+    @SneakyThrows
+    public void testUserDuplicateName_RespondsBadRequest (){
+        User user = saveUserSuccessfully(buildUser());
+
+        UpsertUserDTO userDuplicated = buildUser();
+        userDuplicated.setEmail(EMAIL_2);
+        MvcResult mvcResult = saveUser(userDuplicated);
+
+        verifyBadRequest(mvcResult, UNIQUE_USER_NAME);
+        deleteUser(user.getId());
+    }
+
+    @SneakyThrows
+    private void verifyBadRequest(MvcResult mvcResult, String errorMessage) {
         assertThat(mvcResult.getResponse().getStatus(), is(HttpStatus.BAD_REQUEST.value()));
         ErrorMessageDTO errorMessageDTO = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), ErrorMessageDTO.class);
         assertThat(errorMessageDTO.getStatusCode(), is(HttpStatus.BAD_REQUEST.value()));
         assertThat(errorMessageDTO.getStatusDescription(), is(HttpStatus.BAD_REQUEST.getReasonPhrase()));
-        assertThat(errorMessageDTO.getMessages().get(0), is("UNIQUE_USER_EMAIL"));
-        deleteUser(user.getId());
+        assertThat(errorMessageDTO.getMessages().get(0), is(errorMessage));
     }
 
     private UpsertUserDTO buildUser() {
@@ -124,7 +145,7 @@ public class UserIntegrationTest {
     }
 
     @SneakyThrows
-    private void deleteUser(String id) {
+    private void deleteUser(int id) {
         mockMvc.perform(delete("/users/{id}", id)).andExpect(status().isOk());
     }
 

@@ -32,13 +32,13 @@ public class UserRepositoryTest {
 
     @Test
     public void testFindByName_NotFound() {
-        List<User> user = userRepository.findAllById(singletonList("id"));
+        List<User> user = userRepository.findAllById(singletonList(1));
         assertThat(user, is(emptyList()));
     }
 
     @Test
     public void testFindById_NotFound() {
-        Optional<User> user = userRepository.findById("id");
+        Optional<User> user = userRepository.findById(1);
         assertThat(user, is(Optional.empty()));
     }
 

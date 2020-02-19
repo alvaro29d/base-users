@@ -16,14 +16,17 @@ import java.time.ZonedDateTime;
 @NoArgsConstructor
 @Entity
 @Table(uniqueConstraints = {
-        @UniqueConstraint(name = "unique_user_email", columnNames = {"email"}),
-        @UniqueConstraint(name = "unique_user_name", columnNames = {"name"})
+        @UniqueConstraint(name = User.UNIQUE_USER_EMAIL, columnNames = {"email"}),
+        @UniqueConstraint(name = User.UNIQUE_USER_NAME, columnNames = {"name"})
 })
 public class User {
 
+    public static final String UNIQUE_USER_EMAIL = "unique_user_email";
+    public static final String UNIQUE_USER_NAME = "unique_user_name";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private Integer id;
 
     @NotEmpty(message = "invalid.user.email.notEmpty")
     @Email
