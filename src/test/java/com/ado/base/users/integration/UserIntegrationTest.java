@@ -112,7 +112,7 @@ public class UserIntegrationTest {
         User user = saveUserSuccessfully(buildUser());
 
         UpsertUserDTO userDuplicated = buildUser();
-        userDuplicated.setEmail(EMAIL_1);
+        userDuplicated.setEmail(EMAIL_2);
         MvcResult mvcResult = saveUser(userDuplicated);
 
         verifyBadRequest(mvcResult, UNIQUE_USER_NAME);

@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  users:
+#    image: base_users:0.0.1
+    container_name: users
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+#    depends_on:
+#      - db
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - MYSQL_HOST=db
+      - JDBC_DATABASE_USERNAME=root
+      - JDBC_DATABASE_PASSWORD=admin
+  db:
+#    image: mysql:5.7.20
+#    container_name: users_db
+    build:
+      context: ./
+      dockerfile: docker/db/Dockerfile
+#    hostname: users_db
+#    environment:
+#      - MYSQL_ROOT_PASSWORD=admin
+#    ports:
+#      - 3306:3306
