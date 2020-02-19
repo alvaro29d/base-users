@@ -1,3 +1,4 @@
+![Java CI](https://github.com/alvaro29d/base-users/workflows/Java%20CI/badge.svg)
 # BASE USERS
 
 This is a simple rest API used to admin users.
