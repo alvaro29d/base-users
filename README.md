@@ -21,7 +21,7 @@ mvn clean install
 docker build -t base-users:latest .
 ```
 
-Then use the following command to start the application (you need to have access to a mysql database and previously run the scripts located in `src/main/resources/creation-scripts`
+Then use the following command to start the application (you need to have access to a mysql database and previously run the scripts located in `src/main/resources/creation-scripts`).
 
 ```
 docker run -d --name users -p 8080:8080 \
